@@ -1,10 +1,10 @@
 {
-  "id": "https://marceloribeiro1711.github.io/Padel-Coaching/",
+  "id": "https://marceloribeiro1711.github.io/padelscoreandcoaching/",
   "name": "Padel Coaching",
   "short_name": "Padel Coaching",
   "description": "Professional padel coaching app with real-time scoreboard, match statistics tracking, and TV landscape mode for live matches.",
-  "start_url": "https://marceloribeiro1711.github.io/Padel-Coaching/",
-  "scope": "https://marceloribeiro1711.github.io/Padel-Coaching/",
+  "start_url": "https://marceloribeiro1711.github.io/padelscoreandcoaching/",
+  "scope": "https://marceloribeiro1711.github.io/padelscoreandcoaching/",
   "display": "fullscreen",
   "orientation": "any",
   "background_color": "#0b1a35",
