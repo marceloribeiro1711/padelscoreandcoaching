@@ -13,12 +13,70 @@
             return new Uint8Array(out);
         };
     }
+
+    // ============================================================
+    // FREE TIER — Feature flags centralizadas
+    // Alterar IS_FREE_TIER para false na versão PRO
+    // ============================================================
+    var IS_FREE_TIER = true;
+
+    // ── Link para a versão PRO na loja ───────────────────────────
+    // Actualizar quando a versão PRO estiver publicada na Play Store
+    // Exemplo: 'https://play.google.com/store/apps/details?id=com.marceloribeiro.padelcoachingpro'
+    var PRO_STORE_URL = null; // null = ainda não disponível
+
+    var FREE_RESTRICTIONS = {
+        stats:      true,   // estatísticas sempre OFF, botão ON bloqueado
+        history:    true,   // histórico bloqueado
+        export:     true,   // exportação bloqueada
+        email:      true,   // email bloqueado
+        setMode:    true,   // apenas ProSet disponível
+        starPoint:  true,   // Star Point bloqueado
+        license:    true    // licença automática vitalícia
+    };
+
+    // Nomes amigáveis para o splash de upgrade
+    var FREE_FEATURE_NAMES = {
+        stats:     'Statistics',
+        history:   'Match History',
+        export:    'Export to Excel',
+        email:     'Email Stats',
+        setMode:   '3 Sets / 2 Sets + SuperTie',
+        starPoint: 'Star Point'
+    };
+
+    // Splash de upgrade — chamado por qualquer função bloqueada
+    function showUpgradeSplash(featureKey) {
+        var name = FREE_FEATURE_NAMES[featureKey] || featureKey;
+        var overlay = document.getElementById('upgrade-splash-overlay');
+        var featureEl = document.getElementById('upgrade-splash-feature');
+        var proBtn = document.getElementById('upgrade-splash-get-pro');
+        if (featureEl) featureEl.textContent = name;
+        // Mostrar botão "Get PRO" só se o link estiver definido
+        if (proBtn) {
+            if (PRO_STORE_URL) {
+                proBtn.style.display = 'block';
+                proBtn.onclick = function() { window.open(PRO_STORE_URL, '_blank'); };
+            } else {
+                proBtn.style.display = 'none';
+            }
+        }
+        if (overlay) overlay.classList.add('show');
+    }
+    window.showUpgradeSplash = showUpgradeSplash;
+
+    function closeUpgradeSplash() {
+        var overlay = document.getElementById('upgrade-splash-overlay');
+        if (overlay) overlay.classList.remove('show');
+    }
+    window.closeUpgradeSplash = closeUpgradeSplash;
+
     // ============================================================
     // LICENSE SYSTEM — Voucher-based activation
     // ============================================================
     const LIC_KEY       = 'padel_license';
     const LIC_USED_KEY  = 'padel_used_vouchers';
-    const APP_VERSION   = '1.1.111';
+    const APP_VERSION   = '2.0.1';
 
     // ---- Algoritmo HMAC — idêntico ao Vouchers.html ----
     const SECRET_KEY   = 'PadelCoaching-Voucher-Secret-2026-ChangeThisInProd';
@@ -388,6 +446,23 @@
     }
 
     // ---- Init: calcular device ID e verificar licença ao arrancar ----
+    // FREE TIER: activar licença vitalícia automática
+    if (IS_FREE_TIER && FREE_RESTRICTIONS.license) {
+        try {
+            var existingLic = JSON.parse(localStorage.getItem(LIC_KEY));
+            if (!existingLic || existingLic.type !== 'FREE_LIFETIME') {
+                localStorage.setItem(LIC_KEY, JSON.stringify({
+                    type:         'FREE_LIFETIME',
+                    activationTs: Date.now(),
+                    durationHours: 876000, // 100 anos
+                    trialGranted:  false,
+                    voucherClean:  true,
+                    deviceId:      'FREE'
+                }));
+            }
+        } catch(e) {}
+    }
+
     computeDeviceId().then(id => {
         _deviceId = id;
         const el = document.getElementById('license-device-id');
@@ -1004,11 +1079,13 @@
     // ============================================================
     // superTieMode = true → 3º set é Super Tie-Break
     // superTieMode = false → 3º set normal até 6 com tie-break em 6x6
-    let superTieMode = true;
+    let superTieMode = IS_FREE_TIER ? false : true;
     // prosetMode = true → jogo único até 9, sem sets 1 e 2
-    let prosetMode = false;
+    // FREE TIER: ProSet por defeito
+    let prosetMode = IS_FREE_TIER ? true : false;
 
     // pointMode: 'golden' | 'star'
+    // FREE TIER: sempre Golden Point
     let pointMode = 'golden';
 
     function cyclePointMode() {
@@ -1046,9 +1123,15 @@
 
     function updateModeButton() { updateConfig(); }
 
-    let statsEnabled = true;
+    // FREE TIER: estatísticas sempre OFF
+    let statsEnabled = IS_FREE_TIER ? false : true;
 
     function setStatsMode(val) {
+        // FREE TIER: bloquear activação de estatísticas
+        if (IS_FREE_TIER && FREE_RESTRICTIONS.stats && val === true) {
+            showUpgradeSplash('stats');
+            return;
+        }
         statsEnabled = val;
         applyStatsVisibility();
         updateConfig();
@@ -1072,6 +1155,11 @@
     }
 
     function setSetMode(val) {
+        // FREE TIER: apenas ProSet disponível
+        if (IS_FREE_TIER && FREE_RESTRICTIONS.setMode) {
+            showUpgradeSplash('setMode');
+            return;
+        }
         if (state.currentSet >= 1 || state.matchOver) return;
         prosetMode = false;
         superTieMode = val;
@@ -1088,6 +1176,11 @@
     }
 
     function setPointMode(val) {
+        // FREE TIER: bloquear Star Point
+        if (IS_FREE_TIER && FREE_RESTRICTIONS.starPoint && val === 'star') {
+            showUpgradeSplash('starPoint');
+            return;
+        }
         if (state.matchOver) return;
         pointMode = val;
         state.deuceCount = 0;
@@ -2578,6 +2671,11 @@
     }
 
     function sendGameByEmail() {
+        // FREE TIER: email bloqueado
+        if (IS_FREE_TIER && FREE_RESTRICTIONS.email) {
+            showUpgradeSplash('email');
+            return;
+        }
         const input = document.getElementById('email-recipient-input');
         let lastEmail = '';
         try { lastEmail = localStorage.getItem(EMAIL_LAST_KEY) || ''; } catch(e) {}
@@ -2613,6 +2711,11 @@
     }
 
     function exportHistoryGameToExcel() {
+        // FREE TIER: exportação bloqueada
+        if (IS_FREE_TIER && FREE_RESTRICTIONS.export) {
+            showUpgradeSplash('export');
+            return;
+        }
         const history = loadHistory();
         const entry = history[carouselIdx];
         if (!entry) return;
@@ -2700,6 +2803,11 @@
     function carouselNav(dir) { goToSlide(carouselIdx + dir); }
 
     function openHistory() {
+        // FREE TIER: histórico bloqueado
+        if (IS_FREE_TIER && FREE_RESTRICTIONS.history) {
+            showUpgradeSplash('history');
+            return;
+        }
         carouselIdx = 0;
         renderCarousel();
         document.getElementById('history-overlay').classList.add('show');
