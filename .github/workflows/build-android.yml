@@ -16,9 +16,9 @@ jobs:
 
       # 2. Instalar Node.js
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v24
         with:
-          node-version: '20'
+          node-version: '24'
 
       # 3. Instalar dependências
       - name: Install dependencies
