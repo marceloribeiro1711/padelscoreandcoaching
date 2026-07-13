@@ -1,0 +1,63 @@
+name: Build Android AAB
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:    # permite correr manualmente
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout do código
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 2. Instalar Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      # 3. Instalar dependências
+      - name: Install dependencies
+        run: npm ci
+
+      # 4. Sincronizar Capacitor
+      - name: Capacitor sync
+        run: npx cap sync android
+
+      # 5. Instalar Java
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # 6. Configurar Android SDK
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      # 7. Restaurar keystore a partir do Secret
+      - name: Restore keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/signing.keystore
+
+      # 8. Build do AAB assinado
+      - name: Build signed AAB
+        working-directory: android
+        run: |
+          ./gradlew bundleRelease \
+            -Pandroid.injected.signing.store.file=signing.keystore \
+            -Pandroid.injected.signing.store.password=${{ secrets.KEYSTORE_PASSWORD }} \
+            -Pandroid.injected.signing.key.alias=${{ secrets.KEY_ALIAS }} \
+            -Pandroid.injected.signing.key.password=${{ secrets.KEY_PASSWORD }}
+
+      # 9. Upload do AAB como artefacto para download
+      - name: Upload AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: padel-coaching-release
+          path: android/app/build/outputs/bundle/release/app-release.aab
+          retention-days: 30
