@@ -24,17 +24,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # 4. Sincronizar Capacitor
-      - name: Capacitor sync
-        run: npx cap sync android
-
       # 5. Instalar Java
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
-
+      
+      # 4. Sincronizar Capacitor
+      - name: Capacitor sync
+        run: npx cap sync android
+     
       # 6. Configurar Android SDK
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
