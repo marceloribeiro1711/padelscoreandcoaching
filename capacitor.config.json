@@ -1,0 +1,11 @@
+{
+  "appId": "com.marceloribeiro.padelscoreandcoaching",
+  "appName": "Padel Coaching",
+  "webDir": "android/www",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "backgroundColor": "#0b1a35"
+  }
+}
