@@ -16,7 +16,7 @@ jobs:
 
       # 2. Instalar Node.js
       - name: Setup Node.js
-        uses: actions/setup-node@v26
+        uses: actions/setup-node@v4
         with:
           node-version: '26'
 
