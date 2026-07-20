@@ -340,7 +340,7 @@
                 <div class="config-toggle-opt set-mode" id="cfg-stats-off" onclick="setStatsMode(false)">Off</div>
             </div>
         </div>
-        <div class="config-version" id="config-version-label">V 2.0.1</div>
+        <div class="config-version" id="config-version-label">V 2.0.2</div>
     </div>
 </div>
 
@@ -602,9 +602,25 @@
         <div class="upgrade-splash-title">PRO Feature</div>
         <div class="upgrade-splash-feature" id="upgrade-splash-feature"></div>
         <div class="upgrade-splash-msg">This feature is available in the <strong>PRO version</strong> of Padel Coaching.</div>
-        <button class="upgrade-splash-pro-btn" id="upgrade-splash-get-pro" style="display:none">Get PRO Version</button>
+        <button class="upgrade-splash-pro-btn" id="upgrade-splash-get-pro" onclick="handleUpgradeNow()">Upgrade Now</button>
         <button class="upgrade-splash-later-btn" onclick="closeUpgradeSplash()">Maybe Later</button>
         <button class="upgrade-splash-close" onclick="closeUpgradeSplash()">✕</button>
+    </div>
+</div>
+
+<!-- COMING SOON SPLASH -->
+<div class="upgrade-splash-overlay" id="coming-soon-overlay">
+    <div class="upgrade-splash-modal">
+        <div class="upgrade-splash-icon">🎾</div>
+        <div class="upgrade-splash-title">Coming Soon!</div>
+        <div class="upgrade-splash-msg" style="font-size:2vh; color:#e8f0fe;">
+            <strong style="color:#f5c518; font-size:2.4vh;">Padel Coaching PRO</strong><br><br>
+            The full PRO experience is on its way!<br>
+            Statistics, full history, export and much more.<br><br>
+            <span style="color:#7a9cc8;">Stay tuned — launching very soon on the Play Store.</span>
+        </div>
+        <button class="upgrade-splash-pro-btn" onclick="closeComingSoon()">Got It!</button>
+        <button class="upgrade-splash-close" onclick="closeComingSoon()">✕</button>
     </div>
 </div>
 

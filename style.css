@@ -1820,3 +1820,21 @@
     cursor: pointer;
     width: 100%;
 }
+
+/* Upgrade Now — efeito activo */
+.upgrade-splash-pro-btn:active {
+    background: #d4a900;
+    transform: scale(0.97);
+}
+.upgrade-splash-pro-btn:hover {
+    background: #ffe033;
+}
+
+/* Coming Soon overlay — reutiliza o mesmo estilo do upgrade splash */
+#coming-soon-overlay .upgrade-splash-modal {
+    border-color: #f5c518;
+}
+#coming-soon-overlay .upgrade-splash-title {
+    color: #f5c518;
+    font-size: 3.5vh;
+}

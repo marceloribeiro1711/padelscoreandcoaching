@@ -50,17 +50,7 @@
         var name = FREE_FEATURE_NAMES[featureKey] || featureKey;
         var overlay = document.getElementById('upgrade-splash-overlay');
         var featureEl = document.getElementById('upgrade-splash-feature');
-        var proBtn = document.getElementById('upgrade-splash-get-pro');
         if (featureEl) featureEl.textContent = name;
-        // Mostrar botão "Get PRO" só se o link estiver definido
-        if (proBtn) {
-            if (PRO_STORE_URL) {
-                proBtn.style.display = 'block';
-                proBtn.onclick = function() { window.open(PRO_STORE_URL, '_blank'); };
-            } else {
-                proBtn.style.display = 'none';
-            }
-        }
         if (overlay) overlay.classList.add('show');
     }
     window.showUpgradeSplash = showUpgradeSplash;
@@ -71,12 +61,34 @@
     }
     window.closeUpgradeSplash = closeUpgradeSplash;
 
+    // Botão Upgrade Now:
+    // — se PRO_STORE_URL definido → abre loja
+    // — se null → mostra splash "Coming Soon"
+    function handleUpgradeNow() {
+        closeUpgradeSplash();
+        if (PRO_STORE_URL) {
+            window.open(PRO_STORE_URL, '_blank');
+        } else {
+            setTimeout(function() {
+                var cs = document.getElementById('coming-soon-overlay');
+                if (cs) cs.classList.add('show');
+            }, 200);
+        }
+    }
+    window.handleUpgradeNow = handleUpgradeNow;
+
+    function closeComingSoon() {
+        var cs = document.getElementById('coming-soon-overlay');
+        if (cs) cs.classList.remove('show');
+    }
+    window.closeComingSoon = closeComingSoon;
+
     // ============================================================
     // LICENSE SYSTEM — Voucher-based activation
     // ============================================================
     const LIC_KEY       = 'padel_license';
     const LIC_USED_KEY  = 'padel_used_vouchers';
-    const APP_VERSION   = '2.0.1';
+    const APP_VERSION   = '2.0.2';
 
     // ---- Algoritmo HMAC — idêntico ao Vouchers.html ----
     const SECRET_KEY   = 'PadelCoaching-Voucher-Secret-2026-ChangeThisInProd';

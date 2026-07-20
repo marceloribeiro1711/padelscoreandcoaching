@@ -1,7 +1,7 @@
 // Padel Coaching — Service Worker
 // Compatível com Android 8 (Chrome 67+)
 
-const CACHE_VERSION = 'v2.0.1';
+const CACHE_VERSION = 'v2.0.2';
 
 const PRECACHE_URLS = [
   './',
@@ -11,7 +11,6 @@ const PRECACHE_URLS = [
   './manifest.json',
   './icons/icon-192x192.png',
   './icons/icon-512x512.png'
-  './.well-known/assetlinks.json'
 ];
 
 // ── MESSAGE ───────────────────────────────────────────────────
